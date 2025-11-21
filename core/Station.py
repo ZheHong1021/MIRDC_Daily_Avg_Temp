@@ -36,6 +36,9 @@ class Station:
 
             if self.weather_temps:
                 temps = [data['temp'] for data in self.weather_temps]
+                times = [data['obs_time'] for data in self.weather_temps]
+                logger.info(f'取得測站 {self.stationName} 的溫度資料，時間範圍: {min(times)} ~ {max(times)}')
+                
                 self.avg_temp = round(sum(temps) / len(temps), 1)
                 self.min_temp = min(temps)
                 self.max_temp = max(temps)
@@ -43,11 +46,6 @@ class Station:
                 pressures = [data['pressure'] for data in self.weather_temps]
                 self.pressure = round(sum(pressures) / len(pressures), 1)
 
-                logger.info(f'平均溫度: {self.avg_temp}')
-                logger.info(f'最小溫度: {self.min_temp}')
-                logger.info(f'最大溫度: {self.max_temp}')
-                logger.info(f'平均氣壓: {self.pressure}')
-                logger.info(f'資料筆數: {len(temps)}')
     
     def calculate_weight_temp(self):
         """
@@ -73,7 +71,6 @@ class Station:
                 sum_weight_index += weight_index
                 
         self.weight_temp = round(sum_weight_temp / sum_weight_index, 1)
-        logger.info(f'權重溫度: {self.weight_temp}')
         return self.weight_temp
         
     def fetch_adjusted_temp(self):
