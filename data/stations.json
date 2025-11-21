@@ -1,0 +1,27 @@
+[
+    {
+        "StationId": "C0M750",
+        "StationName": "布袋",
+        "City": "嘉義縣"
+    },
+    {
+        "StationId": "C0V620",
+        "StationName": "永安",
+        "City": "高雄市"
+    },
+    {
+        "StationId": "C0X080",
+        "StationName": "佳里",
+        "City": "臺南市"
+    },
+    {
+        "StationId": "C0R660",
+        "StationName": "枋寮",
+        "City": "屏東縣"
+    },
+    {
+        "StationId": "C0K530",
+        "StationName": "臺西",
+        "City": "雲林縣"
+    }
+]
