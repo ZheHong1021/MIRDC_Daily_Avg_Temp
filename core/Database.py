@@ -75,7 +75,7 @@ class Database:
                     SELECT 
                         `id`, `station`, `temp`, `adjusted_temp`, `date` 
                     FROM `position_status`
-                    WHERE `station` = %s AND `date` < %s
+                    WHERE `station` = %s AND `date` <= %s
                     ORDER BY `date` DESC 
                     LIMIT 7;
                 """

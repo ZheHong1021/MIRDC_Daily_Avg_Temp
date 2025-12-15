@@ -69,8 +69,11 @@ class Station:
                 weight_index = len(temps) - index
                 sum_weight_temp += temp_parameter * weight_index
                 sum_weight_index += weight_index
-                
+                logger.info(f'計算權重溫度: 溫度={temp_parameter}，權重比重={weight_index} ({item["date"]}_{item["station"]})')
+
+
         self.weight_temp = round(sum_weight_temp / sum_weight_index, 1)
+        logger.info(f'計算權重溫度 = {round(sum_weight_temp,1)} ÷ {sum_weight_index} = {self.weight_temp}')
         return self.weight_temp
         
     def fetch_adjusted_temp(self):
