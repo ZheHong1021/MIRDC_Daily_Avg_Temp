@@ -53,7 +53,24 @@ class Station:
           
           使用時間序列權重：最新資料權重最高（權重係數 = 資料總數）
             越往前的資料權重越低（遞減至1）
-            權重溫度 = (七天前溫度 x 1 + 六天前溫度 x 2 + … 一天前溫度 x 7 ) ÷ (7 + 6 +…+ 1)
+            權重溫度 = (六天前溫度 x 1 + 五天前溫度 x 2 + … 今天溫度 x 20 ) ÷ (20 + 10 +…+ 1)
+            +------------+--------------+
+            | n天前    | 權重比例|
+            +============+======+
+            | 6天前     | 1  |
+            +------------+------+
+            | 5天前     | 2  |
+            +------------+------+
+            | 4天前     | 3  |
+            +------------+------+
+            | 3天前     | 4  |
+            +------------+------+
+            | 2天前     | 5  |
+            +------------+------+
+            | 1天前     | 10  |
+            +------------+------+
+            | 今天     | 20  |
+            +------------+------+
           """
         with self.db as db: 
             # 取得溫度資料
@@ -63,10 +80,17 @@ class Station:
           sum_weight_index = 0
           for index, item in enumerate(temps):
                 temp_parameter = (item['adjusted_temp'] or item['temp'])
+
+                if index == 0:
+                    weight_index = 20
+                elif index == 1:
+                    weight_index = 10
+                else:
+                    # [2天前]以後的權重比重 = 總筆數 - index
+                    # index從2開始，則權重比重分別為5,4,3,2,1
+                    weight_index = len(temps) - index
+
                 
-                # 權重比重 = 總筆數 - index
-                # 例如: 7筆資料，index從0開始，則權重比重分別為7,6,5,4,3,2,1
-                weight_index = len(temps) - index
                 sum_weight_temp += temp_parameter * weight_index
                 sum_weight_index += weight_index
                 logger.info(f'計算權重溫度: 溫度={temp_parameter}，權重比重={weight_index} ({item["date"]}_{item["station"]})')
