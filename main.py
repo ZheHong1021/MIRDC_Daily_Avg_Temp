@@ -25,19 +25,33 @@ if __name__ == "__main__":
 
         # 取得測站溫度資料
         station_instance.get_weather_temp()
-        station_instance.calculate_weight_temp()
         station_instance.fetch_adjusted_temp()
 
-        logger.info(f'[結果統計] 平均溫度: {station_instance.avg_temp}')
-        logger.info(f'[結果統計] 最小溫度: {station_instance.min_temp}')
-        logger.info(f'[結果統計] 最大溫度: {station_instance.max_temp}')
-        logger.info(f'[結果統計] 權重溫度: {station_instance.weight_temp}')
-        logger.info(f'[結果統計] 調整後溫度: {station_instance.adjusted_temp}')
-        logger.info(f'[結果統計] 氣壓值: {station_instance.pressure}')
-        logger.info(f'[結果統計] 縣市: {station_instance.city}')
+
+        
 
         # 保存資料到 position_status 表
         with Database(date=date) as db:
+            success = db.create_or_update_position_status(
+                station=station.get('StationName'),
+                data={
+                    'temp': station_instance.avg_temp,
+                    'adjusted_temp': station_instance.adjusted_temp,
+                    'weight_temp': None, # 等等會再更新
+                    'max_Temp': station_instance.max_temp,
+                    'min_Temp': station_instance.min_temp,
+                    'pressure': station_instance.pressure,
+                    'city': station_instance.city
+                }
+            )
+            if not success:
+                logger.error(f'無法保存 {station.get("StationName")} 的資料')
+            else:
+                logger.info(f'已保存 {station.get("StationName")} (日期: {date}) / (氣溫: {station_instance.avg_temp}) / (調整後溫度: {station_instance.adjusted_temp}) 的資料到 position_status 表')
+
+            # 計算權重溫度
+            station_instance.calculate_weight_temp()
+
             success = db.create_or_update_position_status(
                 station=station.get('StationName'),
                 data={
@@ -50,8 +64,16 @@ if __name__ == "__main__":
                     'city': station_instance.city
                 }
             )
-
             if not success:
-                logger.error(f'無法保存 {station.get("StationName")} 的資料')
+                logger.error(f'更新 {station.get("StationName")} 的權重溫度資料失敗')
 
+
+
+        logger.info(f'[結果統計] 平均溫度: {station_instance.avg_temp}')
+        logger.info(f'[結果統計] 最小溫度: {station_instance.min_temp}')
+        logger.info(f'[結果統計] 最大溫度: {station_instance.max_temp}')
+        logger.info(f'[結果統計] 權重溫度: {station_instance.weight_temp}')
+        logger.info(f'[結果統計] 調整後溫度: {station_instance.adjusted_temp}')
+        logger.info(f'[結果統計] 氣壓值: {station_instance.pressure}')
+        logger.info(f'[結果統計] 縣市: {station_instance.city}')
     logger.info("程式執行完成")
